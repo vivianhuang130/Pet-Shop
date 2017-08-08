@@ -87,6 +87,13 @@ app.post('/api/authenticate', (req, res) => {
     res.json({success: true, message: "Logged in successfully.", token})
   })
 })
+// get all products
+  app.get('/api/products', (req, res) => {
+    Product.find({}, (err, products) => {
+      if (err) return console.log(err)
+      res.json(products)
+    })
+  })
 
 // any routes declared after this middleware must include a valid token in order access:
 app.use(verifyToken) // (see the verifyToken() function below...)
@@ -121,13 +128,7 @@ function verifyToken(req, res, next) {
 }
 
 ///// PRODUCTS //////
-// get all products
-  app.get('/api/products', (req, res) => {
-    Product.find({}, (err, products) => {
-      if (err) return console.log(err)
-      res.json(products)
-    })
-  })
+
 
   // post a new products
 app.post('/api/products', (req, res) => {
