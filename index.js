@@ -63,6 +63,14 @@ app.route('/api/users/:id')
     })
   })
 
+app.route('/api/users/:id/cart/:productId')
+  .patch((req, res) => {
+    // find the user (req.params.id)
+    // push req.params.productId to the user's cart array
+    // save the user
+    // respond to the client
+  })
+
 // the Log In route:
 app.post('/api/authenticate', (req, res) => {
   // first, find user by the email in the request body.
@@ -91,6 +99,7 @@ app.post('/api/authenticate', (req, res) => {
   app.get('/api/products', (req, res) => {
     Product.find({}, (err, products) => {
       if (err) return console.log(err)
+      console.log(products)
       res.json(products)
     })
   })

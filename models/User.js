@@ -5,6 +5,7 @@ const
     name: String,
     email: String,
     password: {type: String, select: false},
+    cart: [{type: mongoose.Schema.Types.ObjectId, ref: 'Product'}],
     // with {select: false} option set, passwords will not be included in
     // find queries by default:
     orders: [{
@@ -33,6 +34,20 @@ userSchema.pre('save', function(next) {
   if(!this.isModified('password')) return next()
   this.password = this.generateHash(this.password)
   next()
+})
+
+userSchema.pre("findOne", function(next) {
+  this.populate('cart')
+  next()
+
+  /*
+  cart: [
+      9385679358673,
+      39485y3496396u
+  ]
+  becomes:
+  cart: [{name: tulips etc...},{},{}]
+  */
 })
 
 module.exports = mongoose.model('User', userSchema)
