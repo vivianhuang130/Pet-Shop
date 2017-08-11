@@ -63,15 +63,18 @@ app.route('/api/users/:id')
       // saving to the database (see User model, in userSchema.pre('save')...):
       user.save((err, updatedUser) => {
         // make token for your updated user
-            const userData = updatedUser.toObject()
+        const userData = updatedUser.toObject()
         // delete the info about password of the token
         delete userData.password
         //send the token back to the front end
-            const token = jwt.sign(userData, process.env.SECRET)
+        const token = jwt.sign(userData, process.env.SECRET)
         res.json({success: true, message: "User updated.", token})
       })
     })
-  })
+  }
+  // .delete((req,res) =>
+
+)
 
 app.route('/api/users/:id/cart/:productId')
   .patch((req, res) => {
@@ -178,9 +181,11 @@ app.delete('/api/products/:id', function(req,res){
 //// ORDERS /////
 // index all orders
 app.get('/api/orders', (req, res) => {
-  Order.find({customer: req.user._id}, (err, orders) => {
+//find the user and populate the details of the products and orders
+  User.findById(req.user._id).populate({path: 'orders', populate:{path: "products"}}).exec((err, user) => {
     if (err) return console.log(err) //if
-    res.json(orders) //else
+      // return all the orders by the user we found
+    res.json(user.orders) //else
   })
 })
 
