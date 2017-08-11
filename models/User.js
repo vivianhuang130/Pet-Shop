@@ -10,7 +10,7 @@ const
     // find queries by default:
     orders: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Order' //name of Album model
+      ref: 'Order' //name of Order model
     }]
 
   })
