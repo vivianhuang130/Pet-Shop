@@ -49,6 +49,10 @@ app.route('/api/users/:id')
     })
   })
   .patch((req, res) => {
+    console.log(req.body);
+    console.log("PARAMSSSS");
+    console.log(req.params);
+
     // Instead of using User.findByIdAndUpdate(), we'll use User.findById()
     User.findById(req.params.id, (err, user) => {
       // and update manually here by merging the request body ({name, email, and/or password}) into the user we found by ID.
@@ -58,7 +62,13 @@ app.route('/api/users/:id')
       // so that in case the user is changing their password, the new password gets hashed before
       // saving to the database (see User model, in userSchema.pre('save')...):
       user.save((err, updatedUser) => {
-        res.json({success: true, message: "User updated.", user: updatedUser})
+        // make token for your updated user
+            const userData = updatedUser.toObject()
+        // delete the info about password of the token
+        delete userData.password
+        //send the token back to the front end
+            const token = jwt.sign(userData, process.env.SECRET)
+        res.json({success: true, message: "User updated.", token})
       })
     })
   })
@@ -168,7 +178,7 @@ app.delete('/api/products/:id', function(req,res){
 //// ORDERS /////
 // index all orders
 app.get('/api/orders', (req, res) => {
-  Order.find({}, (err, orders) => {
+  Order.find({customer: req.user._id}, (err, orders) => {
     if (err) return console.log(err) //if
     res.json(orders) //else
   })
@@ -176,10 +186,25 @@ app.get('/api/orders', (req, res) => {
 
 // create an order
 app.post('/api/orders', (req, res) => {
-	Order.create(req.body, (err, order) => {
-		if(err) return console.log(err)
-		res.json(order)
-	})
+  console.log(req.body)
+  //find the user who is making the order
+  User.findById(req.user._id,(err, user)=>{
+    //create an order
+    var newOrder = new Order({customer: req.user._id, products:[]})
+    //push the products inside the cart into the order one by one
+    for(var i=0; i < req.body.cart.length; i++){
+      newOrder.products.push(req.body.cart[i]._id)
+    }
+    //saving the new order
+    newOrder.save((err)=>{
+      //push the order we just created into the user
+      user.orders.push(newOrder)
+      user.save((err, user)=>{
+        //return the info of the new order in json
+        res.json(newOrder)
+      })
+    })
+  })
 })
 
 // get a specific order

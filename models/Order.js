@@ -1,6 +1,7 @@
 const
 mongoose = require('mongoose'),
 orderSchema = new mongoose.Schema({
+  customer: {type: mongoose.Schema.Types.Object, ref: 'User'},
   // totalPrice: {type: Number},
   // purchaseDate: {type: Number},
   products: [{
