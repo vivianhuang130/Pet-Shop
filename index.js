@@ -71,10 +71,18 @@ app.route('/api/users/:id')
         res.json({success: true, message: "User updated.", token})
       })
     })
-  }
-  // .delete((req,res) =>
+  })
+  .delete((req,res) => {
+    User.findByIdAndRemove(req.params.id, (err, user) => {
+      if(err){
+        console.log(err)
+      } else {
+        res.json({success: true, message: "User deleted"})
+      }
+    })
+  })
 
-)
+
 
 app.route('/api/users/:id/cart/:productId')
   .patch((req, res) => {
