@@ -2,9 +2,11 @@ const
   mongoose = require('mongoose'),
   bcrypt = require('bcrypt-nodejs'),
   userSchema = new mongoose.Schema({
+
     name: String,
     email: String,
     password: {type: String, select: false},
+    isAdmin: Boolean,
     cart: [{type: mongoose.Schema.Types.ObjectId, ref: 'Product'}],
     // with {select: false} option set, passwords will not be included in
     // find queries by default:
