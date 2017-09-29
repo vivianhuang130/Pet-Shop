@@ -82,8 +82,6 @@ app.route('/api/users/:id')
     })
   })
 
-
-
 app.route('/api/users/:id/cart/:productId')
   .patch((req, res) => {
     // find the user (req.params.id)
@@ -116,8 +114,9 @@ app.post('/api/authenticate', (req, res) => {
     res.json({success: true, message: "Logged in successfully.", token})
   })
 })
+
 // get all products
-  app.get('/api/products', (req, res) => {
+app.get('/api/products', (req, res) => {
     Product.find({}, (err, products) => {
       if (err) return console.log(err)
       console.log(products)
@@ -160,25 +159,28 @@ function verifyToken(req, res, next) {
 ///// PRODUCTS //////
 
 
-  // post a new products
+// post a new products
 app.post('/api/products', (req, res) => {
+  console.log("-------------- POST CREATE PRODUCT ----------------");
+  console.log(req.body);
+  console.log("-------------- POST CREATE PRODUCT ----------------");
 	Product.create(req.body, (err, product) => {
 		if(err) return console.log(err)
 		res.json(product)
 	})
 })
 
-  // get a specific product
-  app.get('/api/products/:id', (req, res) => {
+// get a specific product
+app.get('/api/products/:id', (req, res) => {
     Product.findById(req.params.id, (err, specificProduct) => {
       if (err) return console.log(err)
       res.json(specificProduct)
     })
   })
 
-  // destroy a product
-app.delete('/api/products/:id', function(req,res){
-  Product.findByIdAndRemove(req.params.id, function(err, deletedProduct){
+// destroy a product
+app.delete('/api/products/:id', (req,res) => {
+  Product.findByIdAndRemove(req.params.id, (err, deletedProduct) => {
     if(err) return console.log(err)
     res.json({message: "Product deleted...", product: deletedProduct})
 
@@ -188,8 +190,9 @@ app.delete('/api/products/:id', function(req,res){
 
 //// ORDERS /////
 // index all orders
+
 app.get('/api/orders', (req, res) => {
-//find the user and populate the details of the products and orders
+  //find the user and populate the details of the products and orders
   User.findById(req.user._id).populate({path: 'orders', populate:{path: "products"}}).exec((err, user) => {
     if (err) return console.log(err) //if
       // return all the orders by the user we found
@@ -236,6 +239,25 @@ app.post('/api/orders/:id/products', (req, res) => {
   })
 })
 
+// post a new product image
+app.post('/api/products/:id/image', (req, res) => {
+  Product.findById(req.params.id, (err, product) => {
+    console.log("---------------- Req body post Image ---------------");
+    console.log(req.body);
+    console.log("---------------- Req body post Image ---------------");
+    var newProduct = new Product(req.body)
+
+  })
+})
+
+// get all images from all products
+app.get('/api/products/images',(req,res) => {
+  Product.find({}, (err, products) => {
+    if (err) return console.log(err)
+    console.log("(Images) products: "+products);
+    return res.json(products)
+  })
+})
 
 
 /////
